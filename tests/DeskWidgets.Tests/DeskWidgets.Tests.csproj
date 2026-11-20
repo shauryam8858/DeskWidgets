@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>DeskWidgets.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+
+  <!-- The tested code is pure logic (no windows), so the files are compiled directly into the test project. -->
+  <ItemGroup>
+    <Compile Include="..\..\src\DeskWidgets\Models\AppSettings.cs" Link="Linked\AppSettings.cs" />
+    <Compile Include="..\..\src\DeskWidgets\Models\SettingsSerializer.cs" Link="Linked\SettingsSerializer.cs" />
+    <Compile Include="..\..\src\DeskWidgets\Utilities\HexColor.cs" Link="Linked\HexColor.cs" />
+    <Compile Include="..\..\src\DeskWidgets\Utilities\CalendarMath.cs" Link="Linked\CalendarMath.cs" />
+    <Compile Include="..\..\src\DeskWidgets\Utilities\CountdownMath.cs" Link="Linked\CountdownMath.cs" />
+    <Compile Include="..\..\src\DeskWidgets\Utilities\PositionMath.cs" Link="Linked\PositionMath.cs" />
+  </ItemGroup>
+
+</Project>
