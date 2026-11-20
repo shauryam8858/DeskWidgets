@@ -1,0 +1,61 @@
+
+name: Build DeskWidgets
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Get the source code
+        uses: actions/checkout@v4
+
+      - name: Install .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Show .NET version
+        run: dotnet --info
+
+      - name: Restore dependencies
+        run: dotnet restore DeskWidgets.sln
+
+      - name: Build (Release)
+        run: dotnet build DeskWidgets.sln --configuration Release --no-restore
+
+      - name: Run automated tests
+        run: dotnet test tests/DeskWidgets.Tests/DeskWidgets.Tests.csproj --configuration Release --verbosity normal
+
+      - name: Publish self-contained single-file Windows x64 app
+        run: >
+          dotnet publish src/DeskWidgets/DeskWidgets.csproj
+          --configuration Release
+          --runtime win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:EnableCompressionInSingleFile=false
+          --output publish
+
+      - name: Check the published file exists
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "publish/DeskWidgets.exe")) {
+            Write-Error "BUILD PROBLEM: publish/DeskWidgets.exe was not created. Read the 'Publish' step above for the real error."
+            exit 1
+          }
+          Get-ChildItem publish | Format-Table Name, Length
+
+      - name: Upload DeskWidgets.exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: DeskWidgets-win-x64
+          path: publish/DeskWidgets.exe
+          if-no-files-found: error
